@@ -76,19 +76,17 @@ class LMS_Course (db.Model):
     
 
 # many-to-many bridge table lms_courses and lms_permissions
-# many-to-many bridge table lms_courses and lms_quizzes
-# many-to-many bridge table lms_chatgpt_sources and lms_topics
-"""
-likes_table = db.Table(
-    'likes',
+
+courses_permissions = db.Table(
+    'lms_courses',
     db.Column(
-        'user_id', db.Integer,
-        db.ForeignKey('users.id'),
+        'course_id', db.Integer,
+        db.ForeignKey('lms_courses.course_id'),
         primary_key=True
     ),
     db.Column(
-        'tweet_id', db.Integer,
-        db.ForeignKey('tweets.id'),
+        'permission_id', db.Integer,
+        db.ForeignKey('lms_permissions.permission_id'),
         primary_key=True
     ),
     db.Column(
@@ -97,7 +95,46 @@ likes_table = db.Table(
         nullable=False
     )
 )
-"""
+
+# many-to-many bridge table lms_courses and lms_quizzes
+
+courses_quizzes = db.Table(
+    'lms_courses',
+    db.Column(
+        'permission_id', db.Integer,
+        db.ForeignKey('lms_permissions.permission_id'),
+        primary_key=True
+    ),
+    db.Column(
+        'quiz_id', db.Integer,
+        db.ForeignKey('lms_quizzes.quiz_id'),
+        primary_key=True
+    ),
+    db.Column(
+        'created_at', db.DateTime,
+        default=datetime.datetime.utcnow,
+        nullable=False
+    )
+)
+
+
+class LMS_Quiz (db.Model):
+    __tablename__ = 'lms_quizzes'
+    quiz_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    quiz_name = db.Column(db.String(280), nullable=False, unique=True)
+    quiz_type = db.Column(db.String(280), nullable=False)
+
+    def __init__(self, quiz_id: int, quiz_name: str):
+        self.quiz_id = quiz_id
+        self.quiz_name = quiz_name
+
+    def serialize(self):
+        return {
+            'id': self.quiz_id,
+            'created_at': self.created_at.isoformat(),
+            'quiz_name': self.quiz_name
+        }
+
 class LMS_Permission (db.Model):
     __tablename__ = 'lms_permissions'
     permission_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -136,6 +173,7 @@ class LMS_ChatGPT_Source (db.Model):
             'created_at': self.created_at.isoformat()
         }
 
+# many-to-many bridge table lms_chatgpt_sources and lms_topics
 
 class LMS_Topic (db.Model):
     __tablename__ = 'lms_topics'
