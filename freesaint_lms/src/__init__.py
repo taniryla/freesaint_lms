@@ -33,6 +33,6 @@ def create_app(test_config=None):
 
     from .api import users, freesaint_lms
     app.register_blueprint(users.bp)
-    app.register_blueprint(tweets.bp)
+    app.register_blueprint(freesaint_lms.bp)
 
     return app
