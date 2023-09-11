@@ -18,7 +18,8 @@ class App_User(db.Model):
     target_weight = db.Column(db.Integer)
     age = db.Column(db.Integer)
     height = db.Column(db.Integer)
-
+    login_id = db.Column(db.Integer, db.ForeignKey('lms_logins.login_id', nullable=False)) # app_user to lms_login 1 to 1
+    
     def __init__(self, id: int, name: str):
         self.id = id
         self.name = name
@@ -30,18 +31,12 @@ class App_User(db.Model):
             'created_at': self.created_at.isoformat()
         }
 
-
-    # app_user to lms_login 1 to 1
-#  user_id = db.Column(db.Integer, db.ForeignKey('users.id', nullable=False)) # 1-to-many
-# lms_login to lms_permissions 1-to-many
-# lms_chatgpt_sources to lms_courses 1-to-many
-
 class LMS_Login (db.Model):
     __tablename__ = 'lms_logins'
     login_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(280), nullable=False)
     password = db.Column(db.String(280), nullable=False)
-   
+    permission_id = db.Column(db.Integer, db.ForeignKey('lms_permissions.permission_id', nullable=False)) # lms_login to lms_permissions 1-to-many
 
     def __init__(self, username: str, password: str):
         self.username = username
@@ -52,6 +47,7 @@ class LMS_Login (db.Model):
             'id': self.username,
             'created_at': self.created_at.isoformat(),
         }
+
 
 
 class LMS_Course (db.Model):
@@ -163,6 +159,8 @@ class LMS_ChatGPT_Source (db.Model):
     health_book_libraries = db.Column(db.String(280), nullable=False)
     health_web_scrapes= db.Column(db.String(280), nullable=False)
     recipes = db.Column(db.String(280), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('lms_courses.course_id', nullable=False))  # lms_chatgpt_sources to lms_courses 1-to-many
+
 
     def __init__(self, id: int):
         self.id = id
@@ -174,6 +172,25 @@ class LMS_ChatGPT_Source (db.Model):
         }
 
 # many-to-many bridge table lms_chatgpt_sources and lms_topics
+
+chatgpt_sources_topics = db.Table(
+    'lms_chatgpt_sources',
+    db.Column(
+        'id', db.Integer,
+        db.ForeignKey('lms_chatgpt_sources.id'),
+        primary_key=True
+    ),
+    db.Column(
+        'id', db.Integer,
+        db.ForeignKey('lms_topics.id'),
+        primary_key=True
+    ),
+    db.Column(
+        'created_at', db.DateTime,
+        default=datetime.datetime.utcnow,
+        nullable=False
+    )
+)
 
 class LMS_Topic (db.Model):
     __tablename__ = 'lms_topics'
