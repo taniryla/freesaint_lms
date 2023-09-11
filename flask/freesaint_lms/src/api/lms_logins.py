@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, abort, request
-from ..models import User, db, Tweet, likes_table
+from ..models import LMS_Topic, App_User, LMS_Course, LMS_Login, LMS_Permission, LMS_Quiz, LMS_ChatGPT_Source, db
 import hashlib
 import secrets
 
@@ -8,73 +8,45 @@ def scramble(password: str):
     salt = secrets.token_hex(16)
     return hashlib.sha512((password + salt).encode('utf-8')).hexdigest()
 
-bp = Blueprint('users', __name__, url_prefix='/users')
+
+bp = Blueprint('lms_logins', __name__, url_prefix='/lms_logins')
 
 @bp.route('', methods=['GET']) #DECORATOR TAKES PATH AND LIST OF HTTP VERBS
 def index():
-    users = User.query.all() # ORM performs SELECT query
+    lms_logins = LMS_Login.query.all() # ORM performs SELECT query
     result = []
-    for u in users:
-        result.append(u.serialize()) # build list of Users as dictionaries
+    for l in lms_logins:
+        result.append(l.serialize()) # build list of LMS_Logins as dictionaries
     return jsonify(result) # return JSON response
 
 @bp.route('/<int:id>', methods=['GET'])
 def show(id: int):
-    u = User.query.get_or_404(id, "User not found")
-    return jsonify(u.serialize())
+    l = LMS_Login.query.get_or_404(id, "LMS Login not found")
+    return jsonify(l.serialize())
 
 @bp.route('', methods=['POST'])
 def create():
-    #req body must contain user_id and content
-    if 'username' not in request.json or 'password' not in request.json:
+    #req body must contain login_id and username
+    if 'login_id' not in request.json or 'username' not in request.json:
         return abort(400)
-    if len(request.json['username']) <= 3 or len(request.json['password']) <= 8:
-        return abort(400)
-    # construct User
-    u = User(
-        username=request.json['username'],
-        password=scramble(request.json['password'])
+    #user with id of login_id must exist
+    App_User.query.get_or_404(request.json['id'], "User not found")
+    # construct LMS Logins
+    l = LMS_Login(
+        login_id=request.json['login_id'],
+        username=request.json['username']
     )
-    db.session.add(u) #prepare CREATE statement
+    db.session.add(l) #prepare CREATE statement
     db.session.commit() #execute CREATE statement
-    return jsonify(u.serialize())
+    return jsonify(l.serialize())
 
 @bp.route('/<int:id>', methods=['DELETE'])
-def delete(id: int):
-    u = User.query.get_or_404(id, "User not found")
+def delete(login_id: int):
+    l = LMS_Login.query.get_or_404(login_id, "Login not found")
     try:
-        db.session.delete(u)    # prepare DELETE statement
+        db.session.delete(l)    # prepare DELETE statement
         db.session.commit()     # execute DELETE statement
         return jsonify(True)
     except:
         # something went wrong :(
         return jsonify(False)
-    
-@bp.route('/<int:id>', methods=['PATCH', 'PUT'])
-def update(id: int):
-    u = User.query.get_or_404(id) # this code queries the user table to find out if a user record with the requested id exists
-     #req body must contain username only, password only and both username and password
-    if 'username' not in request.json or 'password' not in request.json:
-        return abort(400)
-    if len(request.json['username']) <= 3 or len(request.json['password']) <= 8:
-        return abort(400)
-    # construct User
-    u = User(
-        username=request.json['username'],
-        password=scramble(request.json['password'])
-    )
-    try:
-        db.session.update(u)    # prepare UPDATE statement
-        db.session.commit()     # execute UPDATE statement
-        return jsonify(u.serialize())
-    except:
-        # something went wrong :(
-        return jsonify(False)
-    
-@bp.route('/<int:id>/liking_tweets', methods=['GET'])
-def liking_tweets(id: int):
-    u = User.query.get_or_404(id)
-    result = []
-    for t in u.liking_tweets:
-        result.append(t.serialize())
-    return jsonify(result)
