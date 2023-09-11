@@ -114,4 +114,25 @@ class LMS_Permission (db.Model):
             'created_at': self.created_at.isoformat(),
             'permission_name': self.permission_name
         }
+
+
+class LMS_ChatGPT_Source (db.Model):
+    __tablename__ = 'lms_chatgpt_sources'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    podcast_transcripts = db.Column(db.String(280), nullable=False)
+    youtube_transcripts= db.Column(db.String(280), nullable=False)
+    health_blogs = db.Column(db.String(280), nullable=False)
+    health_wikis = db.Column(db.String(280), nullable=False)
+    health_book_libraries = db.Column(db.String(280), nullable=False)
+    health_web_scrapes= db.Column(db.String(280), nullable=False)
+    recipes = db.Column(db.String(280), nullable=False)
+
+    def __init__(self, id: int):
+        self.id = id
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'created_at': self.created_at.isoformat()
+        }
     
