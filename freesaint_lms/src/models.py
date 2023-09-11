@@ -135,4 +135,40 @@ class LMS_ChatGPT_Source (db.Model):
             'id': self.id,
             'created_at': self.created_at.isoformat()
         }
+
+
+class LMS_Topic (db.Model):
+    __tablename__ = 'lms_topics'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    gut_health = db.Column(db.String(280), nullable=False)
+    hormones = db.Column(db.String(280), nullable=False)
+    weight_loss = db.Column(db.String(280), nullable=False)
+    mommy_makeover = db.Column(db.String(280), nullable=False)
+    vegan = db.Column(db.String(280), nullable=False)
+    keto = db.Column(db.String(280), nullable=False)
+    pescatarian = db.Column(db.String(280), nullable=False)
+    vegetarian = db.Column(db.String(280), nullable=False)
+    intermittent_fasting = db.Column(db.String(280), nullable=False)
+    nutrition = db.Column(db.String(280), nullable=False)
+    cardio = db.Column(db.String(280), nullable=False)
+    habits_motivation = db.Column(db.String(280), nullable=False)
+    neuroscience_food = db.Column(db.String(280), nullable=False)
+    loa_manifesting = db.Column(db.String(280), nullable=False)
+    selfcare_sleep_stress = db.Column(db.String(280), nullable=False)
+    vagus_nerve = db.Column(db.String(280), nullable=False)
+    meditation = db.Column(db.String(280), nullable=False)
+    yoga = db.Column(db.String(280), nullable=False)
+    pilates = db.Column(db.String(280), nullable=False)
+    nature = db.Column(db.String(280), nullable=False)
+    weight_lifting = db.Column(db.String(280), nullable=False)
+    hiits = db.Column(db.String(280), nullable=False)
+
+    def __init__(self, id: int):
+        self.id = id
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'created_at': self.created_at.isoformat()
+        }
     
