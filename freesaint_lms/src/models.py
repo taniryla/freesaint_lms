@@ -98,3 +98,20 @@ likes_table = db.Table(
     )
 )
 """
+class LMS_Permission (db.Model):
+    __tablename__ = 'lms_permissions'
+    permission_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    permission_name = db.Column(db.String(280), nullable=False)
+    permission_module = db.Column(db.String(280), nullable=False, unique=True)
+
+    def __init__(self, permission_id: int, permission_name: str):
+        self.permission_id = permission_id
+        self.permission_name = permission_name
+
+    def serialize(self):
+        return {
+            'id': self.permission_id,
+            'created_at': self.created_at.isoformat(),
+            'permission_name': self.permission_name
+        }
+    
