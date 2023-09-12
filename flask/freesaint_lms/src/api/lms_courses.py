@@ -63,6 +63,6 @@ def courses_permissions (id: int):
 def courses_quizzes (quiz_id: int):
     l = LMS_Course.query.get_or_404(quiz_id)
     result = []
-    for b in l.quizzes:
+    for b in l.courses_quizzes:
         result.append(b.serialize())
     return jsonify(result)
