@@ -41,8 +41,8 @@ def create():
     return jsonify(l.serialize())
 
 @bp.route('/<int:id>', methods=['DELETE'])
-def delete(login_id: int):
-    l = LMS_Quiz.query.get_or_404(login_id, "Quiz not found")
+def delete(quiz_id: int):
+    l = LMS_Quiz.query.get_or_404(quiz_id, "Quiz not found")
     try:
         db.session.delete(l)    # prepare DELETE statement
         db.session.commit()     # execute DELETE statement
