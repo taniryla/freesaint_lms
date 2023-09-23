@@ -18,7 +18,7 @@ class App_User(db.Model):
     target_weight = db.Column(db.Integer)
     age = db.Column(db.Integer)
     height = db.Column(db.Integer)
-    login_id = db.Column(db.Integer, db.ForeignKey('lms_logins.login_id', nullable=False)) # app_user to lms_login 1 to 1
+    login_id = db.Column(db.Integer, db.ForeignKey('lms_logins.login_id'), nullable=False) # app_user to lms_login 1 to 1
     
     def __init__(self, id: int, name: str):
         self.id = id
@@ -36,7 +36,7 @@ class LMS_Login (db.Model):
     login_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(280), nullable=False)
     password = db.Column(db.String(280), nullable=False)
-    permission_id = db.Column(db.Integer, db.ForeignKey('lms_permissions.permission_id', nullable=False)) # lms_login to lms_permissions 1-to-many
+    permission_id = db.Column(db.Integer, db.ForeignKey('lms_permissions.permission_id'), nullable=False) # lms_login to lms_permissions 1-to-many
 
     def __init__(self, username: str, password: str):
         self.username = username
@@ -74,7 +74,7 @@ class LMS_Course (db.Model):
 # many-to-many bridge table lms_courses and lms_permissions
 
 courses_permissions = db.Table(
-    'lms_courses',
+    'lms_courses_permissions',
     db.Column(
         'course_id', db.Integer,
         db.ForeignKey('lms_courses.course_id'),
@@ -95,7 +95,7 @@ courses_permissions = db.Table(
 # many-to-many bridge table lms_courses and lms_quizzes
 
 courses_quizzes = db.Table(
-    'lms_courses',
+    'lms_courses_quizzes',
     db.Column(
         'permission_id', db.Integer,
         db.ForeignKey('lms_permissions.permission_id'),
@@ -159,7 +159,7 @@ class LMS_ChatGPT_Source (db.Model):
     health_book_libraries = db.Column(db.String(280), nullable=False)
     health_web_scrapes= db.Column(db.String(280), nullable=False)
     recipes = db.Column(db.String(280), nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('lms_courses.course_id', nullable=False))  # lms_chatgpt_sources to lms_courses 1-to-many
+    course_id = db.Column(db.Integer, db.ForeignKey('lms_courses.course_id'), nullable=False)  # lms_chatgpt_sources to lms_courses 1-to-many
 
 
     def __init__(self, id: int):
@@ -174,7 +174,7 @@ class LMS_ChatGPT_Source (db.Model):
 # many-to-many bridge table lms_chatgpt_sources and lms_topics
 
 chatgpt_sources_topics = db.Table(
-    'lms_chatgpt_sources',
+    'lms_chatgpt_sources_topics',
     db.Column(
         'id', db.Integer,
         db.ForeignKey('lms_chatgpt_sources.id'),
